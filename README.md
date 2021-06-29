@@ -1,4 +1,4 @@
-# Balls
+# [Balls](http://balls.tech/)
 [OneLoneCoder's](https://youtu.be/LPzyNOHY3A4) method of 2D sphere collision, implemented by me in JavaScript.\
 I decided to use it to make a satisfying screensaver/webtoy/graph visualisation thingy.\
 This program is quite demanding so I recommend opening the webpage in chrome.
