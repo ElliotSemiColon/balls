@@ -12,9 +12,19 @@ function resizeCanvas(){
     maxDistSquare = (canvas.width * canvas.width) + (canvas.height * canvas.height);
 }
 
+let planets = [], mass, radius, noPlanets = 20, initialVMax = 1, frameID = 0;
+let a, dt, prevTime, steps = 100, sdt, planet;
+
+///// mouse stuff
+
 let mouseX, mouseY;
 
+// dragging varaibles 
+let offsetX, offsetY, vx, vy, lx, ly;
+
 document.onmousemove = getMouse;
+document.onmousedown = click;
+document.onmouseup = release;
 
 function getMouse(event){
 
@@ -22,12 +32,42 @@ function getMouse(event){
     mouseY = event.clientY;
 }
 
-let planets = [], mass, radius, noPlanets = 25, initialVMax = 1, frameID = 0;
+function click(event){
+
+    let dx, dy, distSquared;
+
+    planets.forEach(planet =>{
+        dx = planet.x - mouseX;
+        dy = planet.y - mouseY;
+        distSquared = (dx * dx) + (dy * dy);
+        if(distSquared < planet.radius * planet.radius){ 
+            planet.dragging = true; 
+            planet.opacity = 0.5;
+            offsetX = dx;
+            offsetY = dy;
+            lx = mouseX + offsetX;
+            ly = mouseY + offsetY;
+        }
+    });
+
+}
+
+function release(event){ 
+    planets.forEach(planet => { 
+        //if(planet.dragging == true){
+        //    planet.vi = vx;
+        //    planet.vj = vy;
+        //}
+        planet.dragging = false; 
+    }); 
+}
+
+//
 
 for(let i = 0; i < noPlanets; i++){
 
     mass = (Math.random() * 1000) + 1;
-    //mass = 100;
+    //mass = 1000;
     radius = Math.pow(mass, 1/2) * 3;
 
     planets.push({
@@ -41,43 +81,43 @@ for(let i = 0; i < noPlanets; i++){
         mass: mass,
         radius: radius,
         digits: Math.ceil(Math.log10(Math.round(mass) + 1)), //digits in mass number
-        opacity: 0.1
+        opacity: 0.1,
+        hue: `${200 + Math.random() * 55},${200 + Math.random() * 55},${200 + Math.random() * 55}`
     });
 
 }
 
-let a, dt, prevTime, steps = 100, sdt, planet;
-const G = 1; //gravitational constant
-
 function update(p){ //moves planet p based on acceleration
 
-    //p.aj += 0.000981 * sdt / 16;
-
-    // p.ai -= 0.0002 * p.vi;
-    // p.aj -= 0.0002 * p.vj;
+    p.ai = -p.vi * (1 / (sdt * 5000));
+    p.aj = -p.vj * (1 / (sdt * 5000));
 
     p.vi += p.ai * sdt / 16;
     p.vj += p.aj * sdt / 16;
-
+    
     p.x += p.vi * sdt / 16;
     p.y += p.vj * sdt / 16;
 
     if(p.x > canvas.width - p.radius){ 
         p.vi *= -1;
         p.x = canvas.width - p.radius;
+        p.opacity = 0.5;
     }
     if(p.x < p.radius){ 
         p.vi *= -1;
         p.x = p.radius;
+        p.opacity = 0.5;
     }
 
     if(p.y > canvas.height - p.radius){ 
         p.vj *= -1;
         p.y = canvas.height - p.radius;
+        p.opacity = 0.5;
     }
     if(p.y < p.radius){ 
         p.vj *= -1;
         p.y = p.radius;
+        p.opacity = 0.5;
     }
 
 }
@@ -85,7 +125,7 @@ function update(p){ //moves planet p based on acceleration
 function draw(p){ //draws planet p
 
     ctx.strokeStyle = "#ffffff";
-    ctx.fillStyle = `rgba(255,255,255,${p.opacity})`;
+    ctx.fillStyle = `rgba(${p.hue},${p.opacity})`;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI);
@@ -208,11 +248,25 @@ function mainLoop(timestamp){
     sdt = dt / steps; //sub-timesteps
 
     if(sdt){
+        planets.forEach(planet => {
+            if(planet.dragging){
+                planet.vi = mouseX + offsetX - lx; //calculating velocity a ball is dragged at
+                planet.vj = mouseY + offsetY - ly;
+                if(planet.vi * planet.vi + planet.vj * planet.vj < 9){ //the square of clamping velocity
+                    planet.vi = planet.vj = 0;
+                }
+                planet.x = lx = mouseX + offsetX;
+                planet.y = ly = mouseY + offsetY;
+            }
+        }); //happens before any planets update so as to not interfere with their physics
+
         for(let x = 0; x < steps; x++){ //physics steps per frame
             planets.forEach(planet => {
-                staticCollide(planet);
-                dynamicCollide(planet);
-                update(planet);
+                if(!planet.dragging){
+                    staticCollide(planet);
+                    dynamicCollide(planet);
+                    update(planet);
+                }
             });
         }
  /*
