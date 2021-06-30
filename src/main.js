@@ -12,7 +12,7 @@ function resizeCanvas(){
     maxDistSquare = (canvas.width * canvas.width) + (canvas.height * canvas.height);
 }
 
-let planets = [], mass, radius, noPlanets = 20, initialVMax = 1, frameID = 0;
+let planets = [], mass, radius, noPlanets = 20, initialVMax = 2, frameID = 0;
 let a, dt, prevTime, steps = 100, sdt, planet;
 
 ///// mouse stuff
@@ -89,14 +89,16 @@ for(let i = 0; i < noPlanets; i++){
 
 function update(p){ //moves planet p based on acceleration
 
-    p.ai = -p.vi * (1 / (sdt * 5000));
-    p.aj = -p.vj * (1 / (sdt * 5000));
+    p.ai = -p.vi * (1 / (sdt * 50000));
+    p.aj = -p.vj * (1 / (sdt * 50000));
 
     p.vi += p.ai * sdt / 16;
     p.vj += p.aj * sdt / 16;
     
     p.x += p.vi * sdt / 16;
     p.y += p.vj * sdt / 16;
+
+    //wall collision static and dynamic response
 
     if(p.x > canvas.width - p.radius){ 
         p.vi *= -1;
