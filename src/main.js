@@ -89,8 +89,8 @@ for(let i = 0; i < noPlanets; i++){
 
 function update(p){ //moves planet p based on acceleration
 
-    p.ai = -p.vi * (1 / (sdt * 50000));
-    p.aj = -p.vj * (1 / (sdt * 50000));
+    p.ai = -p.vi * (1 / (sdt * 10000));
+    p.aj = -p.vj * (1 / (sdt * 10000));
 
     p.vi += p.ai * sdt / 16;
     p.vj += p.aj * sdt / 16;
