@@ -1,4 +1,4 @@
-# [Balls](https://elliotsemicolon.github.io/balls/)
+# [Balls](https://elliot-mb.github.io/balls/)
 [OneLoneCoder's](https://youtu.be/LPzyNOHY3A4) method of 2D sphere collision, implemented by me in JavaScript.\
 I decided to use it to make a satisfying screensaver/webtoy/graph visualisation thingy.\
 If this program is not running well, please open the webpage in Chrome. Chrome has a faster JS engine (v8) which will vastly increase performance over broswers like Firefox.
