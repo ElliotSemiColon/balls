@@ -14,6 +14,7 @@ function resizeCanvas(){
 
 let planets = [], mass, radius, noPlanets = 20, initialVMax = 2, frameID = 0;
 let a, dt, prevTime, steps = 100, sdt, planet;
+let friction = false;
 
 ///// mouse stuff
 
@@ -89,8 +90,10 @@ for(let i = 0; i < noPlanets; i++){
 
 function update(p){ //moves planet p based on acceleration
 
-    p.ai = -p.vi * (1 / (sdt * 10000));
-    p.aj = -p.vj * (1 / (sdt * 10000));
+    if(friction){
+        p.ai = -p.vi * (1 / (sdt * 10000));
+        p.aj = -p.vj * (1 / (sdt * 10000));
+    }
 
     p.vi += p.ai * sdt / 16;
     p.vj += p.aj * sdt / 16;
